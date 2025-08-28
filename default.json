@@ -3,5 +3,6 @@
 	"extends": ["config:recommended"],
 	"configMigration": true,
 	"timezone": "Asia/Tokyo",
-	"automerge": true
+	"automerge": true,
+	"prConcurrentLimit": 5
 }
