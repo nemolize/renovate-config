@@ -3,6 +3,14 @@
 	"extends": ["config:recommended"],
 	"configMigration": true,
 	"timezone": "Asia/Tokyo",
-	"automerge": true,
-	"prConcurrentLimit": 5
+	"minimumReleaseAge": "3 days",
+	"internalChecksFilter": "strict",
+	"prConcurrentLimit": 5,
+	"packageRules": [
+		{
+			"description": "Automerge non-major updates only; major updates require manual review",
+			"matchUpdateTypes": ["minor", "patch", "pin", "digest"],
+			"automerge": true
+		}
+	]
 }
