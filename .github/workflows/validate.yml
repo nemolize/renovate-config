@@ -1,0 +1,17 @@
+name: Validate Renovate config
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate the shared preset against the Renovate schema
+        run: npx --yes --package renovate renovate-config-validator --strict default.json
