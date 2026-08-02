@@ -15,8 +15,9 @@
 		{
 			"description": "Group Playwright's npm packages with the container image that ships their browsers; the image bundles browsers built for one Playwright version, so a split update breaks E2E runs",
 			"matchDepNames": [
-				"@playwright/test",
 				"playwright",
+				"playwright-core",
+				"@playwright/**",
 				"mcr.microsoft.com/playwright"
 			],
 			"groupName": "playwright"
