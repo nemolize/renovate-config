@@ -24,6 +24,7 @@ On top of [`config:recommended`](https://docs.renovatebot.com/presets-config/#co
 | `prConcurrentLimit` | `5` | Cap concurrent Renovate PRs so consumer repos are not flooded. Raise it per-repo if you have more capacity. |
 | `timezone` | `Asia/Tokyo` | Reference timezone for any scheduling a consumer adds. |
 | `configMigration` | `true` | Renovate opens a PR to migrate deprecated config fields automatically. |
+| `groupName` (via `packageRules`) | `playwright` for the Playwright npm packages and the `mcr.microsoft.com/playwright` image | The image bundles browsers built for one Playwright version, so updating the packages and the image in separate PRs breaks E2E runs. Renovate's monorepo data groups the npm packages with each other but does not reach the Docker image, which comes from the `docker` datasource. |
 
 ## Assumptions
 
