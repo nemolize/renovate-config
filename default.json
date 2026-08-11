@@ -13,6 +13,12 @@
 			"automerge": true
 		},
 		{
+			"description": "mcr.microsoft.com and ghcr.io serve tag lists without release timestamps, and the default timestamp-required behaviour reads a missing timestamp as not-yet-aged -- so minimumReleaseAge holds those updates indefinitely rather than for its stated window, with nothing to show why. Docker Hub does return timestamps and keeps aging normally; add a registry here only after checking it serves none. Aging resumes on its own if one starts serving them",
+			"matchDatasources": ["docker"],
+			"matchDepNames": ["mcr.microsoft.com/**", "ghcr.io/**"],
+			"minimumReleaseAgeBehaviour": "timestamp-optional"
+		},
+		{
 			"description": "Group Playwright's npm packages with the container image that ships their browsers; the image bundles browsers built for one Playwright version, so a split update breaks E2E runs",
 			"matchDepNames": [
 				"playwright",
