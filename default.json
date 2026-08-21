@@ -6,10 +6,25 @@
 	"minimumReleaseAge": "3 days",
 	"internalChecksFilter": "strict",
 	"prConcurrentLimit": 5,
+	"customManagers": [
+		{
+			"description": "Keep Cloudflare Workers' compatibility_date moving. It is a hand-maintained date with no package behind it, so no manager covers it and it silently freezes at whatever a project was scaffolded with, leaving no way to tell a deliberate pin from a forgotten one. Versions come from workerd's release tags rather than today's date, so a proposed date can never be one the deployed runtime has not shipped. Raising it opts into runtime behaviour changes, so the automerge rule excludes this manager and the bump lands as a reviewable PR",
+			"customType": "regex",
+			"managerFilePatterns": ["/(^|/)wrangler\\.jsonc?$/"],
+			"matchStrings": [
+				"\"compatibility_date\"\\s*:\\s*\"(?<currentValue>\\d{4}-\\d{2}-\\d{2})\""
+			],
+			"depNameTemplate": "cloudflare/workerd",
+			"datasourceTemplate": "github-releases",
+			"extractVersionTemplate": "^v\\d+\\.(?<version>\\d{8})\\.\\d+$",
+			"versioningTemplate": "regex:^(?<major>\\d{4})(?<minor>\\d{2})(?<patch>\\d{2})$"
+		}
+	],
 	"packageRules": [
 		{
 			"description": "Automerge non-major updates only; major updates require manual review",
 			"matchUpdateTypes": ["minor", "patch", "pin", "digest"],
+			"matchManagers": ["!custom.regex"],
 			"automerge": true
 		},
 		{
