@@ -42,6 +42,11 @@
 				"mcr.microsoft.com/playwright"
 			],
 			"groupName": "playwright"
+		},
+		{
+			"description": "Group everything that ships from cloudflare/workers-sdk; @cloudflare/vite-plugin asserts at load time that the installed wrangler satisfies its peer range and throws when it does not, so a split update leaves the build broken until both PRs land. Matching by source URL rather than by name keeps @cloudflare/workers-types out, since that ships from cloudflare/workerd on its own cadence",
+			"matchSourceUrls": ["https://github.com/cloudflare/workers-sdk"],
+			"groupName": "cloudflare workers-sdk"
 		}
 	]
 }
