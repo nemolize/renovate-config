@@ -18,7 +18,7 @@ On top of [`config:recommended`](https://docs.renovatebot.com/presets-config/#co
 
 | Option | Value | Why |
 |---|---|---|
-| `automerge` (via `packageRules`) | enabled for `minor`, `patch`, `pin`, `digest` only | Non-major updates automerge once checks pass; **major updates require manual review**. |
+| `automerge` (via `packageRules`) | enabled for `minor`, `patch`, `pin`, `digest` only, and never for the custom manager below | Non-major updates automerge once checks pass; **major updates require manual review**. The `compatibility_date` bump is excluded because its version numbers carry no severity: every bump looks like a patch, while the change it opts into is a runtime behaviour change. |
 | `minimumReleaseAge` | `3 days` | A freshly published release (potentially broken or compromised) is not automerged until it has been out for 3 days. |
 | `internalChecksFilter` | `strict` | Hold updates that have not yet satisfied `minimumReleaseAge` instead of merging them early. |
 | `minimumReleaseAgeBehaviour` (via `packageRules`) | `timestamp-optional` for `docker` deps on `mcr.microsoft.com` and `ghcr.io` | Those registries serve tag lists without release timestamps, and the default reads a missing timestamp as not-yet-aged — so `strict` holds the update indefinitely rather than for the three days above, with nothing to show why. Docker Hub does return timestamps and keeps aging normally. |
@@ -26,6 +26,7 @@ On top of [`config:recommended`](https://docs.renovatebot.com/presets-config/#co
 | `timezone` | `Asia/Tokyo` | Reference timezone for any scheduling a consumer adds. |
 | `configMigration` | `true` | Renovate opens a PR to migrate deprecated config fields automatically. |
 | `groupName` (via `packageRules`) | `playwright` for the Playwright npm packages and the `mcr.microsoft.com/playwright` image | The image bundles browsers built for one Playwright version, so updating the packages and the image in separate PRs breaks E2E runs. Renovate's monorepo data groups the npm packages with each other but does not reach the Docker image, which comes from the `docker` datasource. |
+| `customManagers` | a regex manager tracking `compatibility_date` in `wrangler.json` / `wrangler.jsonc` against [`cloudflare/workerd`](https://github.com/cloudflare/workerd) releases | Workers pin runtime behaviour by date, and wrangler **requires** the field — so it is set once at scaffold time and then silently freezes, with nothing to distinguish a deliberate pin from a forgotten one. Dates come from workerd's release tags rather than today's date, so a proposed value can never be one the deployed runtime has not shipped yet. |
 
 ## Assumptions
 
