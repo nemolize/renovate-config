@@ -8,12 +8,14 @@
 	"prConcurrentLimit": 5,
 	"customManagers": [
 		{
-			"description": "Keep Cloudflare Workers' compatibility_date moving. It is a hand-maintained date with no package behind it, so no manager covers it and it silently freezes at whatever a project was scaffolded with, leaving no way to tell a deliberate pin from a forgotten one. Versions come from workerd's release tags rather than today's date, so a proposed date can never be one the deployed runtime has not shipped. Raising it opts into runtime behaviour changes, so the automerge rule excludes this manager and the bump lands as a reviewable PR",
+			"description": "Keep Cloudflare Workers' compatibility_date moving. It is a hand-maintained date with no package behind it, so no manager covers it and it silently freezes at whatever a project was scaffolded with, leaving no way to tell a deliberate pin from a forgotten one. Versions come from workerd's release tags rather than today's date, so a proposed date can never be one the deployed runtime has not shipped. Raising it opts into runtime behaviour changes, so the automerge rule excludes this manager and the bump lands as a reviewable PR. Comparison is on YYYYMMDD because extractVersion lifts one named group out of a tag and so cannot produce the hyphenated form; the file's date is normalised to match and the hyphens written back on the way out",
 			"customType": "regex",
 			"managerFilePatterns": ["/(^|/)wrangler\\.jsonc?$/"],
 			"matchStrings": [
-				"\"compatibility_date\"\\s*:\\s*\"(?<currentValue>\\d{4}-\\d{2}-\\d{2})\""
+				"\"compatibility_date\"\\s*:\\s*\"(?<year>\\d{4})-(?<month>\\d{2})-(?<day>\\d{2})\""
 			],
+			"currentValueTemplate": "{{{year}}}{{{month}}}{{{day}}}",
+			"autoReplaceStringTemplate": "\"compatibility_date\": \"{{{ replace \"(\\d{4})(\\d{2})(\\d{2})\" \"$1-$2-$3\" newValue }}}\"",
 			"depNameTemplate": "cloudflare/workerd",
 			"datasourceTemplate": "github-releases",
 			"extractVersionTemplate": "^v\\d+\\.(?<version>\\d{8})\\.\\d+$",
