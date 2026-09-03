@@ -8,7 +8,7 @@
 	"prConcurrentLimit": 5,
 	"customManagers": [
 		{
-			"description": "Keep Cloudflare Workers' compatibility_date moving. It is a hand-maintained date with no package behind it, so no manager covers it and it silently freezes at whatever a project was scaffolded with, leaving no way to tell a deliberate pin from a forgotten one. Versions come from workerd's release tags rather than today's date, so a proposed date can never be one the deployed runtime has not shipped. Raising it opts into runtime behaviour changes, so the automerge rule excludes this manager and the bump lands as a reviewable PR. Comparison is on YYYYMMDD because extractVersion lifts one named group out of a tag and so cannot produce the hyphenated form; the file's date is normalised to match and the hyphens written back on the way out",
+			"description": "Keep Cloudflare Workers' compatibility_date moving. It is a hand-maintained date with no package behind it, so no manager covers it and it silently freezes at whatever a project was scaffolded with, leaving no way to tell a deliberate pin from a forgotten one. Versions come from workerd's release tags rather than today's date, so a proposed date can never be one the deployed runtime has not shipped. Raising it opts into runtime behaviour changes, and the date maps onto the version fields as major=YYYY, so a bump that crosses a year is a major and lands as a reviewable PR while smaller ones automerge. Comparison is on YYYYMMDD because extractVersion lifts one named group out of a tag and so cannot produce the hyphenated form; the file's date is normalised to match and the hyphens written back on the way out",
 			"customType": "regex",
 			"managerFilePatterns": ["/(^|/)wrangler\\.jsonc?$/"],
 			"matchStrings": [
@@ -26,7 +26,6 @@
 		{
 			"description": "Automerge non-major updates only; major updates require manual review",
 			"matchUpdateTypes": ["minor", "patch", "pin", "digest"],
-			"matchManagers": ["!custom.regex"],
 			"automerge": true
 		},
 		{
