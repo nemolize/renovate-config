@@ -18,6 +18,7 @@ On top of [`config:recommended`](https://docs.renovatebot.com/presets-config/#co
 
 | Option | Value | Why |
 |---|---|---|
+| `dependencyDashboard` | `false` | Do not create a Dependency Dashboard issue in repositories using this preset. |
 | `pinDigests` | `true` | Pin Docker images and GitHub Actions to immutable digests or commit SHAs. |
 | `automerge` (via `packageRules`) | enabled for `minor`, `patch`, `pin`, `digest` only, and never for the custom manager below | Non-major updates automerge once checks pass; **major updates require manual review**. The `compatibility_date` bump is excluded because its version numbers carry no severity: every bump looks like a patch, while the change it opts into is a runtime behaviour change. |
 | `minimumReleaseAge` | `3 days` | A freshly published release (potentially broken or compromised) is not automerged until it has been out for 3 days. |
