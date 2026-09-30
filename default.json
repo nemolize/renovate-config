@@ -50,6 +50,12 @@
 			"description": "Group everything that ships from cloudflare/workers-sdk; @cloudflare/vite-plugin asserts at load time that the installed wrangler satisfies its peer range and throws when it does not, so a split update leaves the build broken until both PRs land. Matching by source URL rather than by name keeps @cloudflare/workers-types out, since that ships from cloudflare/workerd on its own cadence",
 			"matchSourceUrls": ["https://github.com/cloudflare/workers-sdk"],
 			"groupName": "cloudflare workers-sdk"
+		},
+		{
+			"description": "Hold compatibility_date back until the local toolchain can run it. The date tracks workerd's release tags, but wrangler and vitest-pool-workers bundle their own workerd, which lags those tags by days; a newer date makes that local runtime refuse to start, failing tests and dev servers while deploys still pass. 14 days is chosen empirically, with room over the lag seen so far, so the workers-sdk update catches up first",
+			"matchManagers": ["custom.regex"],
+			"matchDepNames": ["cloudflare/workerd"],
+			"minimumReleaseAge": "14 days"
 		}
 	]
 }
