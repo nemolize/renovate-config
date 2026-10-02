@@ -22,6 +22,16 @@
 			"datasourceTemplate": "github-releases",
 			"extractVersionTemplate": "^v\\d+\\.(?<version>\\d{8})\\.\\d+$",
 			"versioningTemplate": "regex:^(?<major>\\d{4})(?<minor>\\d{2})(?<patch>\\d{2})$"
+		},
+		{
+			"description": "Track zizmor pinned in mise.toml under its short name. The mise manager has no datasource mapping for `zizmor`, so it reports the dependency as unsupported and never proposes an update; renaming it to `aqua:zizmorcore/zizmor` would work but loses the short name",
+			"customType": "regex",
+			"managerFilePatterns": ["/(^|/)mise\\.toml$/"],
+			"matchStrings": ["(?m)^zizmor = \"(?<currentValue>[^\"]+)\""],
+			"depNameTemplate": "zizmor",
+			"packageNameTemplate": "zizmorcore/zizmor",
+			"datasourceTemplate": "github-tags",
+			"extractVersionTemplate": "^v(?<version>.+)$"
 		}
 	],
 	"packageRules": [
@@ -56,6 +66,12 @@
 			"matchManagers": ["custom.regex"],
 			"matchDepNames": ["cloudflare/workerd"],
 			"minimumReleaseAge": "14 days"
+		},
+		{
+			"description": "mise.toml holds a bare version with nowhere to write a digest",
+			"matchManagers": ["custom.regex"],
+			"matchDepNames": ["zizmor"],
+			"pinDigests": false
 		}
 	]
 }
