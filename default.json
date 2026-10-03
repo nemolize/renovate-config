@@ -8,6 +8,31 @@
 	"minimumReleaseAge": "3 days",
 	"internalChecksFilter": "strict",
 	"prConcurrentLimit": 5,
+	"customDatasources": {
+		"workerd-compatibility-date": {
+			"description": "Compatibility dates the local test runtime can start with. @cloudflare/vitest-pool-workers pins an exact miniflare whose version carries the date of the workerd it bundles, and that workerd refuses any newer compatibility_date; it releases less often than wrangler, so it is the binding limit. Each stable release maps to its miniflare date, timestamped by the first release that pinned it",
+			"defaultRegistryUrlTemplate": "https://registry.npmjs.org/@cloudflare/vitest-pool-workers",
+			"format": "json",
+			"transformTemplates": [
+				"{ \"releases\": ( $root := $; $rows := $keys($root.versions)[$match($, /^\\d+\\.\\d+\\.\\d+$/)].( $date := $match($lookup($root.versions, $).dependencies.miniflare, /^\\d+\\.(\\d{8})\\./).groups[0]; $date ? { \"version\": $date, \"ts\": $toMillis($lookup($root.time, $)) } ); $distinct($rows.version).( $v := $; { \"version\": $v, \"releaseTimestamp\": $fromMillis($min($rows[version = $v].ts)) } ) ) }"
+			]
+		}
+	},
+	"customManagers": [
+		{
+			"description": "Keep Cloudflare Workers compatibility_date moving, capped by the custom datasource above. It is a hand-maintained date with no package behind it, so without this it silently freezes at whatever a project was scaffolded with. The date maps onto the version fields as major=YYYY, so a bump that crosses a year is a major and lands as a reviewable PR while smaller ones automerge. Comparison is on YYYYMMDD; the file date is normalised to match and the hyphens written back on the way out",
+			"customType": "regex",
+			"managerFilePatterns": ["/(^|/)wrangler\\.jsonc?$/"],
+			"matchStrings": [
+				"\"compatibility_date\"\\s*:\\s*\"(?<year>\\d{4})-(?<month>\\d{2})-(?<day>\\d{2})\""
+			],
+			"currentValueTemplate": "{{{year}}}{{{month}}}{{{day}}}",
+			"autoReplaceStringTemplate": "\"compatibility_date\": \"{{{ replace \"(\\d{4})(\\d{2})(\\d{2})\" \"$1-$2-$3\" newValue }}}\"",
+			"depNameTemplate": "compatibility_date",
+			"datasourceTemplate": "custom.workerd-compatibility-date",
+			"versioningTemplate": "regex:^(?<major>\\d{4})(?<minor>\\d{2})(?<patch>\\d{2})$"
+		}
+	],
 	"packageRules": [
 		{
 			"description": "Automerge non-major updates only; major updates require manual review",
@@ -33,6 +58,11 @@
 		{
 			"description": "Group everything that ships from cloudflare/workers-sdk; @cloudflare/vite-plugin asserts at load time that the installed wrangler satisfies its peer range and throws when it does not, so a split update leaves the build broken until both PRs land. Matching by source URL rather than by name keeps @cloudflare/workers-types out, since that ships from cloudflare/workerd on its own cadence",
 			"matchSourceUrls": ["https://github.com/cloudflare/workers-sdk"],
+			"groupName": "cloudflare workers-sdk"
+		},
+		{
+			"description": "Ship compatibility_date in the same PR as the workers-sdk update that raises its cap; bumped alone, it can land before the lockfile carries the vitest-pool-workers that supports it",
+			"matchDatasources": ["custom.workerd-compatibility-date"],
 			"groupName": "cloudflare workers-sdk"
 		}
 	]
