@@ -8,22 +8,6 @@
 	"minimumReleaseAge": "3 days",
 	"internalChecksFilter": "strict",
 	"prConcurrentLimit": 5,
-	"customManagers": [
-		{
-			"description": "Keep Cloudflare Workers' compatibility_date moving. It is a hand-maintained date with no package behind it, so no manager covers it and it silently freezes at whatever a project was scaffolded with, leaving no way to tell a deliberate pin from a forgotten one. Versions come from workerd's release tags rather than today's date, so a proposed date can never be one the deployed runtime has not shipped. Raising it opts into runtime behaviour changes, and the date maps onto the version fields as major=YYYY, so a bump that crosses a year is a major and lands as a reviewable PR while smaller ones automerge. Comparison is on YYYYMMDD because extractVersion lifts one named group out of a tag and so cannot produce the hyphenated form; the file's date is normalised to match and the hyphens written back on the way out",
-			"customType": "regex",
-			"managerFilePatterns": ["/(^|/)wrangler\\.jsonc?$/"],
-			"matchStrings": [
-				"\"compatibility_date\"\\s*:\\s*\"(?<year>\\d{4})-(?<month>\\d{2})-(?<day>\\d{2})\""
-			],
-			"currentValueTemplate": "{{{year}}}{{{month}}}{{{day}}}",
-			"autoReplaceStringTemplate": "\"compatibility_date\": \"{{{ replace \"(\\d{4})(\\d{2})(\\d{2})\" \"$1-$2-$3\" newValue }}}\"",
-			"depNameTemplate": "cloudflare/workerd",
-			"datasourceTemplate": "github-releases",
-			"extractVersionTemplate": "^v\\d+\\.(?<version>\\d{8})\\.\\d+$",
-			"versioningTemplate": "regex:^(?<major>\\d{4})(?<minor>\\d{2})(?<patch>\\d{2})$"
-		}
-	],
 	"packageRules": [
 		{
 			"description": "Automerge non-major updates only; major updates require manual review",
@@ -50,12 +34,6 @@
 			"description": "Group everything that ships from cloudflare/workers-sdk; @cloudflare/vite-plugin asserts at load time that the installed wrangler satisfies its peer range and throws when it does not, so a split update leaves the build broken until both PRs land. Matching by source URL rather than by name keeps @cloudflare/workers-types out, since that ships from cloudflare/workerd on its own cadence",
 			"matchSourceUrls": ["https://github.com/cloudflare/workers-sdk"],
 			"groupName": "cloudflare workers-sdk"
-		},
-		{
-			"description": "Hold compatibility_date back until the local toolchain can run it. The date tracks workerd's release tags, but wrangler and vitest-pool-workers bundle their own workerd, which lags those tags by days; a newer date makes that local runtime refuse to start, failing tests and dev servers while deploys still pass. 14 days is chosen empirically, with room over the lag seen so far, so the workers-sdk update catches up first",
-			"matchManagers": ["custom.regex"],
-			"matchDepNames": ["cloudflare/workerd"],
-			"minimumReleaseAge": "14 days"
 		}
 	]
 }
